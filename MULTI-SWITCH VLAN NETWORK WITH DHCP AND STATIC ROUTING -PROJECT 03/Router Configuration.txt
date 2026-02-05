@@ -1,0 +1,72 @@
+enable
+configure terminal
+
+! ---------- Enable Router Interface ----------
+interface g0/0
+ no shutdown
+ exit
+
+! ---------- Subinterfaces for VLANs ----------
+! HR VLAN 10
+interface g0/0.10
+ encapsulation dot1Q 10
+ ip address 192.168.20.97 255.255.255.240
+ no shutdown
+ exit
+
+! IT VLAN 20
+interface g0/0.20
+ encapsulation dot1Q 20
+ ip address 192.168.20.33 255.255.255.224
+ no shutdown
+ exit
+
+! Finance VLAN 30
+interface g0/0.30
+ encapsulation dot1Q 30
+ ip address 192.168.20.1 255.255.255.224
+ no shutdown
+ exit
+
+! Sales VLAN 40
+interface g0/0.40
+ encapsulation dot1Q 40
+ ip address 192.168.20.65 255.255.255.224
+ no shutdown
+ exit
+
+! ---------- DHCP Configuration ----------
+
+! Exclude static IPs & gateways
+ip dhcp excluded-address 192.168.20.1 192.168.20.3   ! Finance PCs
+ip dhcp excluded-address 192.168.20.97              ! HR gateway
+ip dhcp excluded-address 192.168.20.33              ! IT gateway
+ip dhcp excluded-address 192.168.20.65              ! Sales gateway
+
+! HR Pool
+ip dhcp pool HR
+ network 192.168.20.96 255.255.255.240
+ default-router 192.168.20.97
+ dns-server 8.8.8.8
+ exit
+
+! IT Pool
+ip dhcp pool IT
+ network 192.168.20.32 255.255.255.224
+ default-router 192.168.20.33
+ dns-server 8.8.8.8
+ exit
+
+! Sales Pool
+ip dhcp pool SALES
+ network 192.168.20.64 255.255.255.224
+ default-router 192.168.20.65
+ dns-server 8.8.8.8
+ exit
+
+! ---------- Verify ----------
+! Check interfaces
+do show ip interface brief
+
+! Check DHCP bindings
+do show ip dhcp binding
